@@ -1,0 +1,37 @@
+{
+   "version": 1,
+   "afu-image": {
+      "power": 0,
+      "clock-frequency-high": "auto",
+      "clock-frequency-low": "auto",
+      "afu-top-interface":
+         {
+            "class": "ccip_std_afu_avalon_mm",
+            "module-ports" :
+               [
+                  {
+                     "class": "cci-p",
+                     "params":
+                        {
+                           "clock": "uClk_usr"
+                        }
+                  },
+                  {
+                     "class": "local-memory",
+                     "params":
+                        {
+                           "clock": "uClk_usr"
+                        }
+                  }
+               ]
+         },
+      "accelerator-clusters":
+         [
+            {
+               "name": "bfs_cci",
+               "total-contexts": 1,
+               "accelerator-type-uuid": "092a3e62-81c5-499a-ae2c-62ff4788fadd"
+            }
+         ]
+   }
+}

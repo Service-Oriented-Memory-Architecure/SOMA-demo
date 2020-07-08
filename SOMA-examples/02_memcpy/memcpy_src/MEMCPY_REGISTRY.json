@@ -1,0 +1,108 @@
+{
+  "platform": {
+    "clock": "clk",
+    "reset": "SoftReset",
+    "memory": [
+      {
+        "type": "CCIP",
+        "name": "topC"
+      },
+      {
+        "type": "AVL",
+        "name": "topA"
+      }
+    ]
+  },
+  "connected-components": [
+    {
+      "type": "hostMsgSvc",
+      "name": "csr2CA",
+      "connections": [
+        {
+          "channel-ifc-name": "memcpy",
+          "connection": "mcS"
+        }
+      ]
+    },
+    {
+      "type": "memcopy",
+      "name": "mcS",
+      "connections": [
+        {
+          "channel-ifc-name": "cmdQ",
+          "connection": "mcS"
+        },
+        {
+          "channel-ifc-name": "readA",
+          "connection": "readCCI"
+        },
+        {
+          "channel-ifc-name": "writeA",
+          "connection": "writeCCI"
+        },
+        {
+          "channel-ifc-name": "readB",
+          "connection": "readAVL"
+        },
+        {
+          "channel-ifc-name": "writeB",
+          "connection": "writeAVL"
+        }
+      ]
+    },
+    {
+      "type": "read",
+      "name": "readAVL",
+      "req-limit": 32,
+      "rsp-order": true,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "readAVL"
+        }
+      ]
+    },
+    {
+      "type": "read",
+      "name": "readCCI",
+      "req-limit": 32,
+      "rsp-order": true,
+      "addr-width": 64,
+      "memory-ifc": "topC",
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "readCCI"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "name": "writeAVL",
+      "req-limit": 32,
+      "rsp-order": true,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "write",
+          "connection": "writeAVL"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "name": "writeCCI",
+      "req-limit": 32,
+      "rsp-order": true,
+      "addr-width": 64,
+      "memory-ifc": "topC",
+      "connections": [
+        {
+          "channel-ifc-name": "write",
+          "connection": "writeCCI"
+        }
+      ]
+    }
+  ]
+}

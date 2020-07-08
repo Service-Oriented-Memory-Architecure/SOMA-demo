@@ -1,0 +1,125 @@
+{
+  "platform": {
+    "clock": "clk",
+    "reset": "SoftReset",
+    "memory": [
+      {
+        "type": "CCIP",
+        "name": "topC"
+      },
+      {
+        "type": "AVL",
+        "name": "topA0"
+      },
+      {
+        "type": "AVL",
+        "name": "topA1"
+      }
+    ]
+  },
+  "connected-components": [
+    {
+      "type": "app_afu_Q",
+      "name": "afuQ",
+      "connections": [
+        {
+          "channel-ifc-name": "counters_0",
+          "connection": "cntr1"
+        },
+        {
+          "channel-ifc-name": "counters_1",
+          "connection": "cntr2"
+        }
+      ]
+    },
+    {
+      "type": "app_afu_R",
+      "name": "afuR",
+      "connections": [
+        {
+          "channel-ifc-name": "counters_2",
+          "connection": "cntr1"
+        },
+        {
+          "channel-ifc-name": "counters_3",
+          "connection": "cntr2"
+        }
+      ]
+    },
+    {
+      "type": "counters",
+      "name": "cntr1",
+      "connections": [
+        {
+          "channel-ifc-name": "counters",
+          "connection": "cntr1"
+        },
+        {
+          "channel-ifc-name": "read_mem",
+          "connection": "read_1"
+        },
+        {
+          "channel-ifc-name": "write_mem",
+          "connection": "writeA"
+        }
+      ]
+    },
+    {
+      "type": "counters",
+      "name": "cntr2",
+      "connections": [
+        {
+          "channel-ifc-name": "counters",
+          "connection": "cntr2"
+        },
+        {
+          "channel-ifc-name": "read_mem",
+          "connection": "read_1"
+        },
+        {
+          "channel-ifc-name": "write_mem",
+          "connection": "writeB"
+        }
+      ]
+    },
+    {
+      "type": "read",
+      "name": "read_1",
+      "req-limit": 16,
+      "rsp-order": true,
+      "memory-ifc": "topC",
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "read_1"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "name": "writeA",
+      "req-limit": 16,
+      "rsp-order": true,
+      "memory-ifc": "topC",
+      "connections": [
+        {
+          "channel-ifc-name": "write",
+          "connection": "writeA"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "name": "writeB",
+      "req-limit": 16,
+      "rsp-order": true,
+      "memory-ifc": "topC",
+      "connections": [
+        {
+          "channel-ifc-name": "write",
+          "connection": "writeB"
+        }
+      ]
+    }
+  ]
+}

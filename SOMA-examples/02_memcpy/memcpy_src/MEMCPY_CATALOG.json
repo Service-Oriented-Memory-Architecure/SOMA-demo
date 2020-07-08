@@ -1,0 +1,275 @@
+[
+  {
+    "type": "hostMsgSvc",
+    "description": "Creates messages to services from host MMIO writes.",
+    "source": "SV",
+    "sv-mod": "csr2srv",
+    "channels": [
+      {
+        "ifc-name": "memcpy",
+        "arg-size": 64,
+        "data-size": 512
+      }
+    ],
+    "requires": [
+      {
+        "service-type": "memcopy",
+        "channel-ifc-name": "memcpy"
+      }
+    ],
+    "control": {
+      "ports": [
+        {
+          "name": "start",
+          "size": 1,
+          "direction": "input"
+        },
+        {
+          "name": "done",
+          "size": 1,
+          "direction": "output"
+        },
+        {
+          "name": "clear",
+          "size": 1,
+          "direction": "input"
+        },
+        {
+          "name": "destination",
+          "size": 64,
+          "direction": "input"
+        },
+        {
+          "name": "source",
+          "size": 64,
+          "direction": "input"
+        },
+        {
+          "name": "mc_num",
+          "size": 64,
+          "direction": "input"
+        }
+      ]
+    }
+  },
+  {
+    "type": "memcopy",
+    "description": "Copys a number of cachelines from one read service to another write service.",
+    "source": "BSV",
+    "bsv-mod": "mkMemCopyDual",
+    "channels": [
+      {
+        "ifc-name": "cmdQ",
+        "arg-size": 64,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "readA",
+        "arg-size": 64,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "writeA",
+        "arg-size": 64,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "readB",
+        "arg-size": 64,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "writeB",
+        "arg-size": 64,
+        "data-size": 512
+      }
+    ],
+    "provides": [
+      {
+        "service-type": "memcopy",
+        "channel-ifc-name": "cmdQ"
+      }
+    ],
+    "requires": [
+      {
+        "service-type": "read",
+        "channel-ifc-name": "readA"
+      },
+      {
+        "service-type": "write",
+        "channel-ifc-name": "writeA"
+      },
+      {
+        "service-type": "read",
+        "channel-ifc-name": "readB"
+      },
+      {
+        "service-type": "write",
+        "channel-ifc-name": "writeB"
+      }
+    ],
+    "message-structure": {
+      "arg0": "destination idx",
+      "arg1": "source idx",
+      "arg2": "number of transfers",
+      "arg3": "[1:0] direction: 0 = (A->B), 1 = (B->A), 2 = (A->A), 3 = (B->B)"
+    }
+  },
+  {
+    "type": "counters",
+    "description": "Provides a service to atomically increment a counter at a specified index by a specified value.",
+    "source": "BSV",
+    "bsv-mod": "mkCountersServer",
+    "channels": [
+      {
+        "ifc-name": "counters",
+        "arg-size": 32,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "read_mem",
+        "arg-size": 32,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "write_mem",
+        "arg-size": 32,
+        "data-size": 512
+      }
+    ],
+    "provides": [
+      {
+        "service-type": "counters",
+        "channel-ifc-name": "counters"
+      }
+    ],
+    "requires": [
+      {
+        "service-type": "read",
+        "channel-ifc-name": "read_mem"
+      },
+      {
+        "service-type": "write",
+        "channel-ifc-name": "write_mem"
+      }
+    ],
+    "message-structure": {
+      "arg0": "counter idx",
+      "arg1": "increment by value",
+      "arg2": "bit 1 = ack/nack",
+      "arg3": "?"
+    }
+  },
+  {
+    "type": "read",
+    "description": "Provides a non-blocking read operation to a specified address, the message arguments are returned with the data.",
+    "source": "BSV",
+    "bsv-mod": "mkReadServer",
+    "properties": {
+      "req-limit": {
+        "description": "The number of requests allowed outanding to the service.",
+        "type": "integer",
+        "min": 2,
+        "max": 32
+      },
+      "rsp-order": {
+        "description": "True for ordered responses, False for unordered responses.",
+        "type": "boolean"
+      },
+      "addr-width": {
+        "description": "The address width and therefore argument size for the service. Default 32 is overwritten by this property.",
+        "type": "integer",
+        "min": 16,
+        "max": 64
+      },
+      "memory-ifc": {
+        "description": "The name of the memory interface the service connects to from the platform memory specification.",
+        "type": "string"
+      }
+    },
+    "channels": [
+      {
+        "ifc-name": "read",
+        "arg-size": 32,
+        "data-size": 512
+      }
+    ],
+    "provides": [
+      {
+        "service-type": "read",
+        "channel-ifc-name": "read"
+      }
+    ],
+    "control": {
+      "config": [
+        {
+          "name": "setRd_addr",
+          "size": 64,
+          "direction": "input"
+        }
+      ]
+    },
+    "message-structure": {
+      "arg0": "?",
+      "arg1": "addr",
+      "arg2": "?",
+      "arg3": "?"
+    }
+  },
+  {
+    "type": "write",
+    "description": "Provides a non-blocking write operation to a specified address, the message arguments are returned with the data.",
+    "source": "BSV",
+    "bsv-mod": "mkWriteServer",
+    "properties": {
+      "req-limit": {
+        "description": "The number of requests allowed outanding to the service.",
+        "type": "integer",
+        "min": 2,
+        "max": 32
+      },
+      "rsp-order": {
+        "description": "True for ordered responses, False for unordered responses.",
+        "type": "boolean"
+      },
+      "addr-width": {
+        "description": "The address width and therefore argument size for the service. Default 32 is overwritten by this property.",
+        "type": "integer",
+        "min": 16,
+        "max": 64
+      },
+      "memory-ifc": {
+        "description": "The name of the memory interface the service connects to from the platform memory specification.",
+        "type": "string"
+      }
+    },
+    "channels": [
+      {
+        "ifc-name": "write",
+        "arg-size": 32,
+        "data-size": 512
+      }
+    ],
+    "provides": [
+      {
+        "service-type": "write",
+        "channel-ifc-name": "write"
+      }
+    ],
+    "control": {
+      "config": [
+        {
+          "name": "setWr_addr",
+          "size": 64,
+          "direction": "input"
+        }
+      ]
+    },
+    "message-structure": {
+      "arg0": "?",
+      "arg1": "addr",
+      "arg2": "?",
+      "arg3": "?"
+    }
+  }
+]

@@ -1,0 +1,237 @@
+[
+  {
+    "type": "app_afu_Q",
+    "description": "Sends requests to increment counter idxs 5 and 33 by 1 'count_to' times.",
+    "source": "SV",
+    "sv-mod": "app_afu_Q",
+    "channels": [
+      {
+        "ifc-name": "counters_0",
+        "arg-size": 32,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "counters_1",
+        "arg-size": 32,
+        "data-size": 512
+      }
+    ],
+    "requires": [
+      {
+        "service-type": "counters",
+        "channel-ifc-name": "counters_0"
+      },
+      {
+        "service-type": "counters",
+        "channel-ifc-name": "counters_1"
+      }
+    ],
+    "control": {
+      "start": "start",
+      "finish": "done",
+      "config": [
+        {
+          "name": "count_to",
+          "size": 20,
+          "direction": "input"
+        }
+      ]
+    }
+  },
+  {
+    "type": "app_afu_R",
+    "description": "Sends requests to increment counter idx 1 by 2 and 18 by 1 'count_to' times.",
+    "source": "SV",
+    "sv-mod": "app_afu_R",
+    "channels": [
+      {
+        "ifc-name": "counters_2",
+        "arg-size": 32,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "counters_3",
+        "arg-size": 32,
+        "data-size": 512
+      }
+    ],
+    "requires": [
+      {
+        "service-type": "counters",
+        "channel-ifc-name": "counters_2"
+      },
+      {
+        "service-type": "counters",
+        "channel-ifc-name": "counters_3"
+      }
+    ],
+    "control": {
+      "start": "start",
+      "finish": "done",
+      "config": [
+        {
+          "name": "count_to",
+          "size": 20,
+          "direction": "input"
+        }
+      ]
+    }
+  },
+  {
+    "type": "counters",
+    "description": "Provides a service to atomically increment a counter at a specified index by a specified value.",
+    "source": "BSV",
+    "bsv-mod": "mkCountersServer",
+    "channels": [
+      {
+        "ifc-name": "counters",
+        "arg-size": 32,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "read_mem",
+        "arg-size": 32,
+        "data-size": 512
+      },
+      {
+        "ifc-name": "write_mem",
+        "arg-size": 32,
+        "data-size": 512
+      }
+    ],
+    "provides": [
+      {
+        "service-type": "counters",
+        "channel-ifc-name": "counters"
+      }
+    ],
+    "requires": [
+      {
+        "service-type": "read",
+        "channel-ifc-name": "read_mem"
+      },
+      {
+        "service-type": "write",
+        "channel-ifc-name": "write_mem"
+      }
+    ],
+    "message-structure": {
+      "arg0": "counter idx",
+      "arg1": "increment by value",
+      "arg2": "bit 1 = ack/nack",
+      "arg3": "?"
+    }
+  },
+  {
+    "type": "read",
+    "description": "Provides a non-blocking read operation to a specified address, the message arguments are returned with the data.",
+    "source": "BSV",
+    "bsv-mod": "mkReadServer",
+    "properties": {
+      "req-limit": {
+        "description": "The number of requests allowed outanding to the service.",
+        "type": "integer",
+        "min": 2,
+        "max": 32
+      },
+      "rsp-order": {
+        "description": "True for ordered responses, False for unordered responses.",
+        "type": "boolean"
+      },
+      "addr-width": {
+        "description": "The address width and therefore argument size for the service. Default 32 is overwritten by this property.",
+        "type": "integer",
+        "min": 16,
+        "max": 64
+      },
+      "memory-ifc": {
+        "description": "The name of the memory interface the service connects to from the platform memory specification.",
+        "type": "string"
+      }
+    },
+    "channels": [
+      {
+        "ifc-name": "read",
+        "arg-size": 32,
+        "data-size": 512
+      }
+    ],
+    "provides": [
+      {
+        "service-type": "read",
+        "channel-ifc-name": "read"
+      }
+    ],
+    "control": {
+      "config": [
+        {
+          "name": "setRd_addr",
+          "size": 64,
+          "direction": "input"
+        }
+      ]
+    },
+    "message-structure": {
+      "arg0": "?",
+      "arg1": "addr",
+      "arg2": "?",
+      "arg3": "?"
+    }
+  },
+  {
+    "type": "write",
+    "description": "Provides a non-blocking write operation to a specified address, the message arguments are returned with the data.",
+    "source": "BSV",
+    "bsv-mod": "mkWriteServer",
+    "properties": {
+      "req-limit": {
+        "description": "The number of requests allowed outanding to the service.",
+        "type": "integer",
+        "min": 2,
+        "max": 32
+      },
+      "rsp-order": {
+        "description": "True for ordered responses, False for unordered responses.",
+        "type": "boolean"
+      },
+      "addr-width": {
+        "description": "The address width and therefore argument size for the service. Default 32 is overwritten by this property.",
+        "type": "integer",
+        "min": 16,
+        "max": 64
+      },
+      "memory-ifc": {
+        "description": "The name of the memory interface the service connects to from the platform memory specification.",
+        "type": "string"
+      }
+    },
+    "channels": [
+      {
+        "ifc-name": "write",
+        "arg-size": 32,
+        "data-size": 512
+      }
+    ],
+    "provides": [
+      {
+        "service-type": "write",
+        "channel-ifc-name": "write"
+      }
+    ],
+    "control": {
+      "config": [
+        {
+          "name": "setWr_addr",
+          "size": 64,
+          "direction": "input"
+        }
+      ]
+    },
+    "message-structure": {
+      "arg0": "?",
+      "arg1": "addr",
+      "arg2": "?",
+      "arg3": "?"
+    }
+  }
+]

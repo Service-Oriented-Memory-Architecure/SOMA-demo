@@ -1,0 +1,259 @@
+{
+  "platform": {
+    "clock": "clk",
+    "reset": "SoftReset",
+    "memory": [
+      {
+        "type": "CCIP",
+        "name": "topC"
+      },
+      {
+        "type": "AVL",
+        "name": "topA"
+      }
+    ]
+  },
+  "connected-components": [
+    {
+      "type": "BFSafuPipeline",
+      "name": "afuBFS",
+      "connections": [
+        {
+          "channel-ifc-name": "worklist_chan",
+          "connection": "bfs2worklist"
+        },
+        {
+          "channel-ifc-name": "neighbor_chan",
+          "connection": "bfs2neighbor"
+        },
+        {
+          "channel-ifc-name": "update_chan",
+          "connection": "bfs2update"
+        }
+      ]
+    },
+    {
+      "type": "Worklist",
+      "name": "worklistServiceMod",
+      "connections": [
+        {
+          "channel-ifc-name": "workQ",
+          "connection": "bfs2worklist"
+        },
+        {
+          "channel-ifc-name": "listRd",
+          "connection": "readWorklist"
+        },
+        {
+          "channel-ifc-name": "listWr",
+          "connection": "writeWorklist"
+        }
+      ]
+    },
+    {
+      "type": "graph-server",
+      "name": "graphServiceMod",
+      "connections": [
+        {
+          "channel-ifc-name": "neighborCmdQ",
+          "connection": "bfs2neighbor"
+        },
+        {
+          "channel-ifc-name": "updateCmdQ",
+          "connection": "bfs2update"
+        },
+        {
+          "channel-ifc-name": "readNodes",
+          "connection": "readNodes"
+        },
+        {
+          "channel-ifc-name": "readEdges",
+          "connection": "readEdges"
+        },
+        {
+          "channel-ifc-name": "readDistance",
+          "connection": "readDistance"
+        },
+        {
+          "channel-ifc-name": "writeDistance",
+          "connection": "writeDistance"
+        }
+      ]
+    },
+
+    {
+      "type": "read",
+      "name": "readNodes",
+      "req-limit": 32,
+      "rsp-order": true,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "readNodes"
+        }
+      ]
+    },
+    {
+      "type": "read",
+      "name": "readEdges",
+      "req-limit": 32,
+      "rsp-order": true,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "readEdges"
+        }
+      ]
+    },
+    {
+      "type": "read",
+      "name": "readWorklist",
+      "req-limit": 32,
+      "rsp-order": true,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "readWorklist"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "name": "writeWorklist",
+      "req-limit": 32,
+      "rsp-order": true,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "write",
+          "connection": "writeWorklist"
+        }
+      ]
+    },
+    {
+      "type": "readwrite-cache",
+      "name": "rdwr2DistanceCache",
+      "req-limit": 32,
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "readDistance"
+        },
+        {
+          "channel-ifc-name": "write",
+          "connection": "writeDistance"
+        },
+        {
+          "channel-ifc-name": "cache",
+          "connection": "distanceCache"
+        }
+      ]
+    },
+    {
+      "type": "cache",
+      "name": "distanceCache",
+      "req-limit": 32,
+      "cache-entries": 16384,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "reqQ",
+          "connection": "distanceCache"
+        }
+      ]
+    },
+    {
+      "type": "hostMsgSvc",
+      "name": "csr2CA",
+      "connections": [
+        {
+          "channel-ifc-name": "memcpy",
+          "connection": "mcS"
+        }
+      ]
+    },
+    {
+      "type": "memcopy",
+      "name": "mcS",
+      "connections": [
+        {
+          "channel-ifc-name": "cmdQ",
+          "connection": "mcS"
+        },
+        {
+          "channel-ifc-name": "readA",
+          "connection": "readCCI"
+        },
+        {
+          "channel-ifc-name": "writeA",
+          "connection": "writeCCI"
+        },
+        {
+          "channel-ifc-name": "readB",
+          "connection": "readAVL"
+        },
+        {
+          "channel-ifc-name": "writeB",
+          "connection": "writeAVL"
+        }
+      ]
+    },
+    {
+      "type": "read",
+      "name": "readAVL",
+      "req-limit": 32,
+      "rsp-order": true,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "readAVL"
+        }
+      ]
+    },
+    {
+      "type": "read",
+      "name": "readCCI",
+      "req-limit": 32,
+      "rsp-order": true,
+      "addr-width": 64,
+      "memory-ifc": "topC",
+      "connections": [
+        {
+          "channel-ifc-name": "read",
+          "connection": "readCCI"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "name": "writeAVL",
+      "req-limit": 32,
+      "rsp-order": true,
+      "memory-ifc": "topA",
+      "connections": [
+        {
+          "channel-ifc-name": "write",
+          "connection": "writeAVL"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "name": "writeCCI",
+      "req-limit": 32,
+      "rsp-order": true,
+      "addr-width": 64,
+      "memory-ifc": "topC",
+      "connections": [
+        {
+          "channel-ifc-name": "write",
+          "connection": "writeCCI"
+        }
+      ]
+    }
+  ]
+}
