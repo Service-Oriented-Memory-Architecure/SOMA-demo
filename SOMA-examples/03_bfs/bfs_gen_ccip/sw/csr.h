@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-// Service module that generates messages to services from software MMIO CSR writes.
-//
 // BFS specialized
 #ifndef CSR_H
 #define CSR_H
