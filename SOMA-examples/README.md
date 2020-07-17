@@ -20,7 +20,7 @@ These examples are provided as a demonstration for a service-oriented memory arc
 
 ## Environment Setup
 
-Clone this repository into the intel-fpga-bbb/samples directory. 
+Copy this directory (SOMA-examples) into the intel-fpga-bbb/samples directory. 
 
 **Be sure to EDIT and source init.sh!**
 
